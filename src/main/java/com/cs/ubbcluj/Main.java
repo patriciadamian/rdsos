@@ -4,20 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.pcap4j.core.PcapNetworkInterface;
+import org.pcap4j.core.*;
 import org.pcap4j.util.NifSelector;
 
-
-import java.io.IOException;
 import org.pcap4j.core.BpfProgram.BpfCompileMode;
-import org.pcap4j.core.NotOpenException;
-import org.pcap4j.core.PacketListener;
-import org.pcap4j.core.PcapHandle;
-import org.pcap4j.core.PcapNativeException;
-import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
 import org.pcap4j.packet.Packet;
-import org.pcap4j.util.NifSelector;
 
 public class Main {
 
@@ -30,8 +22,7 @@ public class Main {
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         boolean startReading = false;
-        while (reader.read() != -1) {
-            line = reader.readLine();
+        while ((line = reader.readLine()) != null) {
             if (line.contains("SHOW INTERFACE CAPABILITIES")) {
                 startReading = false;
             }
@@ -47,7 +38,7 @@ public class Main {
         System.out.println(stringBuilder.toString());
     }
 
-    public static void main(String [] args) throws PcapNativeException, IOException, NotOpenException, InterruptedException {
+    public static void sniffingPackets(String[] args) throws IOException, PcapNativeException, NotOpenException, InterruptedException {
         String filter = "tcp port 80";
         if (args.length != 0) {
             filter = args[0];
@@ -64,12 +55,7 @@ public class Main {
             handle.setFilter(filter, BpfCompileMode.OPTIMIZE);
         }
 
-        PacketListener listener = new PacketListener() {
-            @Override
-            public void gotPacket(Packet packet) {
-                printPacket(packet, handle);
-            }
-        };
+        PacketListener listener = packet -> printPacket(packet, handle);
 
         handle.loop(200, listener);
     }
@@ -83,4 +69,8 @@ public class Main {
         System.out.println(packet);
     }
 
+    public static void main(String [] args) throws PcapNativeException, IOException, NotOpenException, InterruptedException {
+        wifiAnalyser();
+//        sniffingPackets(args);
+    }
 }
