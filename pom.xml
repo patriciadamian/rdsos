@@ -12,9 +12,14 @@
         <dependency>
             <groupId>org.pcap4j</groupId>
             <artifactId>pcap4j-core</artifactId>
-            <version>1.7.3</version>
-            <type>jar</type>
+            <version>1.7.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.pcap4j</groupId>
+            <artifactId>pcap4j-packetfactory-static</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -27,20 +32,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <!-- Tell the JAR plugin which class is the main class -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.github.username.App</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
 
