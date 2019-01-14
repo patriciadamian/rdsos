@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 public class GUI extends Application {
 
     ExecutorService executorService = Executors.newFixedThreadPool(1);
+    boolean resetTextArea = false;
 
     public static void main(String[] args) {
         launch(args);
@@ -30,7 +31,10 @@ public class GUI extends Application {
         Button sniffingTool = new Button("Sniffing tool");
 
         wifiAnalyser.setOnAction(event -> wifiAnalyserAction(textArea));
-        sniffingTool.setOnAction(event -> sniffingToolAction(textArea));
+        sniffingTool.setOnAction(event -> {
+            resetTextArea = true;
+            sniffingToolAction(textArea, resetTextArea);
+        });
 
         VBox vBox = new VBox(wifiAnalyser, sniffingTool, textArea);
         Scene boxScene = new Scene(vBox, 500, 500);
@@ -50,13 +54,16 @@ public class GUI extends Application {
         }
     }
 
-    private void sniffingToolAction(TextArea textArea) {
+    private void sniffingToolAction(TextArea textArea, boolean resetTextArea) {
+        if (resetTextArea) {
+            textArea.clear();
+        }
         try {
             SnifferTask task = new SnifferTask();
             task.setOnSucceeded((succeededEvent) -> {
                     textArea.appendText(task.getValue().toString());
 
-                sniffingToolAction(textArea);
+                sniffingToolAction(textArea, false);
             });
             executorService = Executors.newFixedThreadPool(1);
             executorService.execute(task);
