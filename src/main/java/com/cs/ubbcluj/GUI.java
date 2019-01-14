@@ -8,8 +8,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GUI extends Application {
+
+    ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public static void main(String[] args) {
         launch(args);
@@ -37,6 +41,7 @@ public class GUI extends Application {
     }
 
     private void wifiAnalyserAction(TextArea textArea) {
+        executorService.shutdownNow();
         try {
             textArea.clear();
             textArea.appendText(WifiAnalyser.analyse());
@@ -46,7 +51,20 @@ public class GUI extends Application {
     }
 
     private void sniffingToolAction(TextArea textArea) {
-            textArea.clear();
-//            textArea.appendText(SniffingPackets.sniff(args));
+        try {
+            SnifferTask task = new SnifferTask();
+            task.setOnSucceeded((succeededEvent) -> {
+                    textArea.appendText(task.getValue().toString());
+
+                sniffingToolAction(textArea);
+            });
+            executorService = Executors.newFixedThreadPool(1);
+            executorService.execute(task);
+            executorService.shutdown();
+            textArea.appendText("Result");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

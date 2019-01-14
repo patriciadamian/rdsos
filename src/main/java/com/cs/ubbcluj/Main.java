@@ -1,15 +1,13 @@
 package com.cs.ubbcluj;
 
+import org.pcap4j.core.BpfProgram.BpfCompileMode;
+import org.pcap4j.core.*;
+import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
+import org.pcap4j.packet.Packet;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import org.pcap4j.core.*;
-import org.pcap4j.util.NifSelector;
-
-import org.pcap4j.core.BpfProgram.BpfCompileMode;
-import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
-import org.pcap4j.packet.Packet;
 
 public class Main {
 
@@ -44,7 +42,7 @@ public class Main {
             filter = args[0];
         }
 
-        PcapNetworkInterface nif = new NifSelector().selectNetworkInterface();
+        PcapNetworkInterface nif = Pcaps.findAllDevs().get(0);
         if (nif == null) {
             System.exit(1);
         }
@@ -70,7 +68,7 @@ public class Main {
     }
 
     public static void main(String [] args) throws PcapNativeException, IOException, NotOpenException, InterruptedException {
-        wifiAnalyser();
-//        sniffingPackets(args);
+//        wifiAnalyser();
+        sniffingPackets(args);
     }
 }
